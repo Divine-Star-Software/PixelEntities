@@ -1,0 +1,24 @@
+{
+  "name": "dve-plugins-pixel-entities-dev",
+  "version": "0.0.0",
+  "description": "A plugin for DVE.",
+  "type": "module",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "url": "https://github.com/Divine-Star-Software/PixelEntities"
+  },
+  "homepage": "https://github.com/Divine-Star-Software/PixelEntities",
+  "author": "Divine Star Software",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.7.15"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^5.47.1",
+    "divine-voxel-engine": "^1.2.56"
+  }
+}
