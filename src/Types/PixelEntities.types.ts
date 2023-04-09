@@ -1,8 +1,9 @@
-import type { SetNodeMesh } from "divine-voxel-engine/Meta/Tasks/RenderTasks.types";
 import type { LocationData } from "voxelspaces";
+import { PixelEntityData } from "./PixelEntityData.types";
 
-export type CreatePixelEntityTask = [id: string, location: LocationData];
-export type CreatePixelEntityReturn = [
-  setNodeMesh : SetNodeMesh,
-  matrixArray: Float32Array
+export type CreatePixelEntityShapeTask = [location: LocationData];
+export type CreatePixelEntityTask = [
+  location: LocationData,
+  data: PixelEntityData
 ];
+export type CreatePixelEntityReturn = [id: string, matrixArray: Float32Array];

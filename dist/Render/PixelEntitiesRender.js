@@ -1,12 +1,28 @@
 import { DVER } from "divine-voxel-engine/Render/DivineVoxelEngineRender.js";
+import { RendredPixelEntity } from "./Classes/RenderedPixelEntity.js";
 export const PixelEntitesRender = {
-    spawnEntity(id, location) {
-        DVER.constructorCommManager.runPromiseTasks("create-pixel-entity", [id, location], [], ([nodeMeshData, matrixBuffer]) => {
-            const mesh = DVER.nodes.meshes.create("pixel-entity", nodeMeshData);
-            if (!mesh)
-                return;
-            mesh.thinInstanceBufferUpdated("matrix");
-            mesh.thinInstanceSetBuffer("matrix", matrixBuffer);
+    entities: new Set(),
+    updateEntities() {
+        for (const entitie of this.entities) {
+            entitie.update();
+        }
+    },
+    _getEntityShape(location) {
+        return new Promise((resolve) => {
+            DVER.constructorCommManager.runPromiseTasks("create-pixel-entity-shape", [location], [], (returnData) => {
+                resolve(returnData);
+            });
+        });
+    },
+    spawnEntity([location, data]) {
+        return new Promise(async (resolve) => {
+            const meshData = await this._getEntityShape(location);
+            DVER.nexusComm.runPromiseTasks("create-pixel-entity", [location, data], [], (returnData) => {
+                resolve(new RendredPixelEntity(location, meshData, returnData));
+            });
         });
     },
 };
+setInterval(() => {
+    PixelEntitesRender.updateEntities();
+}, 50);

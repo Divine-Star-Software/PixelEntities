@@ -1,62 +1,38 @@
-import { DVEC } from "divine-voxel-engine/Constructor/DivineVoxelEngineConstructor.js";
 import { MeshBuilderTool } from "divine-voxel-engine/Constructor/Builder/Tools/MeshBuilderTool.js";
 import { MesherDataTool } from "divine-voxel-engine/Constructor/Builder/Tools/MesherDataTools.js";
 const mesher = new MeshBuilderTool();
 const mesherData = new MesherDataTool();
-mesherData.attributes.add([["nodeData", [[], 1, "32f"]]]);
 mesherData.vars.add([["texture", 0]]);
 mesher.setMesherTool(mesherData);
-const indentiyMatrix = [
-    [1, 0, 0, 0],
-    [0, 1, 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 1],
-];
 export const PixelEntitiesConstructor = {
-    $INIT() {
-        DVEC.TC.registerTasks("create-pixel-entity", (data, onDone) => {
-            if (!onDone)
-                return;
-        }, "deferred");
-    },
-    createPixelEntity(data) {
-        mesher.quad.setDimensions(1, 1);
+    _createBox([w, h, d]) {
+        mesher.quad.setDimensions(w, h);
         mesher.quad
             .setDirection("top")
-            .updatePosition(0.5, 1, 0.5)
+            .updatePosition(w / 2, h, d / 2)
             .create()
             .setDirection("bottom")
-            .updatePosition(0.5, 0, 0.5)
+            .updatePosition(w / 2, 0, d / 2)
             .create()
             .setDirection("north")
-            .updatePosition(0.5, 0.5, 1)
+            .updatePosition(w / 2, h / 2, d)
             .create()
             .setDirection("south")
-            .updatePosition(0.5, 0.5, 0)
+            .updatePosition(w / 2, h / 2, 0)
             .create()
             .setDirection("east")
-            .updatePosition(1, 0.5, 0.5)
+            .updatePosition(w, h / 2, d / 2)
             .create()
             .setDirection("west")
-            .updatePosition(0, 0.5, 0.5)
+            .updatePosition(0, h / 2, d / 2)
             .create();
-        const numInstances = 5;
-        const matrixBuffersize = 16 * 4 * numInstances;
-        const instanceMatrixBuffer = new SharedArrayBuffer(matrixBuffersize);
-        const instanceMatrix = new Float32Array(instanceMatrixBuffer);
-        let i = numInstances;
-        let k = 0;
-        while (i--) {
-            for (const row of indentiyMatrix) {
-                for (const col of row) {
-                    instanceMatrix[k] = col;
-                    k++;
-                }
-            }
-        }
+    },
+    createPixelEntity() {
+        const dim = 0.125;
+        this._createBox([dim, dim, dim]);
         const meshData = mesherData.getAllAttributes();
         mesher.quad.clear();
         mesherData.resetAll();
-        return [meshData, instanceMatrix];
+        return meshData;
     },
 };
