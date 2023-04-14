@@ -1,23 +1,25 @@
+import { AnimatedPixelEntityType } from "../Classes/AnimatedPixelEntityType.js";
 export const PixelEntityAnimationManager = {
-    pixelEntities: new Set(),
-    pixelEntitiesIndex: new Map(),
-    addEntity(entity) {
-        this.pixelEntities.add(entity);
-        this.pixelEntitiesIndex.set(entity.id, entity);
+    pixelEntitiesTypeIndex: new Map(),
+    addEntityType(entity) {
+        this.pixelEntitiesTypeIndex.set(entity.data.id, entity);
+    },
+    getEntityType(data) {
+        let type = this.pixelEntitiesTypeIndex.get(data.id);
+        if (!type) {
+            type = new AnimatedPixelEntityType(data);
+            this.pixelEntitiesTypeIndex.set(data.id, type);
+        }
+        return type;
     },
     removeEntity(id) {
-        const entity = this.pixelEntitiesIndex.get(id);
-        if (!entity)
-            return;
-        this.pixelEntities.delete(entity);
-        this.pixelEntitiesIndex.delete(entity.id);
+        for (const [key, type] of this.pixelEntitiesTypeIndex) {
+            type.removeEntity(id);
+        }
     },
     runAnimation() {
-        if (this.pixelEntities.size == 0)
-            return;
-        for (const entity of this.pixelEntities) {
-            entity._runAnimationTick();
-            entity.lerpFrames(entity.currentFrame, entity.nextFrame, entity._getPercentTillNextFrame());
+        for (const [index, type] of this.pixelEntitiesTypeIndex) {
+            type.runAnimations();
         }
     },
 };

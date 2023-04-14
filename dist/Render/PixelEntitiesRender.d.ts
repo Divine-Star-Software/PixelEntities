@@ -1,10 +1,10 @@
-import type { CreatePixelEntityTask } from "Types/PixelEntities.types";
 import type { LocationData } from "voxelspaces";
 import { RendredPixelEntity } from "./Classes/RenderedPixelEntity.js";
-import { SetNodeMesh } from "divine-voxel-engine/Meta/Tasks/RenderTasks.types.js";
+import { MeshAttributes } from "divine-voxel-engine/Constructor/Builder/Types/MeshData.types.js";
+import { PixelEntityData } from "Types/PixelEntityData.types.js";
 export declare const PixelEntitesRender: {
     entities: Set<RendredPixelEntity>;
     updateEntities(): void;
-    _getEntityShape(location: LocationData): Promise<SetNodeMesh>;
-    spawnEntity([location, data]: CreatePixelEntityTask): Promise<RendredPixelEntity>;
+    _getEntityShape(location: LocationData): Promise<MeshAttributes>;
+    spawnEntity([location, data]: [location: LocationData, data: PixelEntityData]): Promise<RendredPixelEntity>;
 };

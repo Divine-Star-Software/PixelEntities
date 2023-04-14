@@ -5,6 +5,6 @@ export async function InitPixelEntitesConstructor() {
         if (!onDone)
             return;
         const meshData = await PixelEntitiesConstructor.createPixelEntity();
-        onDone([data[0], meshData[0]], meshData[1]);
+        onDone(meshData[0], meshData[1]);
     }, "deferred");
 }

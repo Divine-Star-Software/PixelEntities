@@ -1,31 +1,32 @@
+import { AnimatedPixelEntityType } from "../Classes/AnimatedPixelEntityType.js";
 import type { AnimatedPixelEntity } from "../Classes/AnimatedPixelEntity.js";
+import type { ProcessedEntityData } from "Types/PixelEntityData.types.js";
 
 export const PixelEntityAnimationManager = {
-  pixelEntities: new Set<AnimatedPixelEntity>(),
-  pixelEntitiesIndex: new Map<string, AnimatedPixelEntity>(),
+  pixelEntitiesTypeIndex: new Map<string, AnimatedPixelEntityType>(),
 
-  addEntity(entity: AnimatedPixelEntity) {
-    this.pixelEntities.add(entity);
-    this.pixelEntitiesIndex.set(entity.id, entity);
+  addEntityType(entity: AnimatedPixelEntityType) {
+    this.pixelEntitiesTypeIndex.set(entity.data.id, entity);
+  },
+
+  getEntityType(data: ProcessedEntityData) {
+    let type = this.pixelEntitiesTypeIndex.get(data.id);
+    if (!type) {
+      type = new AnimatedPixelEntityType(data);
+      this.pixelEntitiesTypeIndex.set(data.id, type);
+    }
+    return type;
   },
 
   removeEntity(id: string) {
-    const entity = this.pixelEntitiesIndex.get(id);
-    if (!entity) return;
-    this.pixelEntities.delete(entity);
-    this.pixelEntitiesIndex.delete(entity.id);
+    for (const [key, type] of this.pixelEntitiesTypeIndex) {
+      type.removeEntity(id);
+    }
   },
 
   runAnimation() {
-    if (this.pixelEntities.size == 0) return;
-    for (const entity of this.pixelEntities) {
-      entity._runAnimationTick();
-
-      entity.lerpFrames(
-        entity.currentFrame,
-        entity.nextFrame,
-        entity._getPercentTillNextFrame()
-      );
+    for (const [index, type] of this.pixelEntitiesTypeIndex) {
+      type.runAnimations();
     }
   },
 };

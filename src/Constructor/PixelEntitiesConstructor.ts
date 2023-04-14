@@ -3,28 +3,34 @@ import { MesherDataTool } from "divine-voxel-engine/Constructor/Builder/Tools/Me
 
 const mesher = new MeshBuilderTool();
 const mesherData = new MesherDataTool();
-mesherData.vars.add([["texture", 0]]);
+mesherData.attributes.add([["cuv3", [[], 3, "32f"]]]);
 mesher.setMesherTool(mesherData);
-
+mesher.quad.uvs.attributeId = "cuv3";
 export const PixelEntitiesConstructor = {
   _createBox([w, h, d]: [w: number, h: number, d: number]) {
     mesher.quad.setDimensions(w, h);
-    mesher.quad
+    mesher.quad.uvs
+      .add(1)
       .setDirection("top")
       .updatePosition(w / 2, h, d / 2)
       .create()
+      .uvs.add(1)
       .setDirection("bottom")
       .updatePosition(w / 2, 0, d / 2)
       .create()
+      .uvs.add(1)
       .setDirection("north")
       .updatePosition(w / 2, h / 2, d)
       .create()
+      .uvs.add(1)
       .setDirection("south")
       .updatePosition(w / 2, h / 2, 0)
       .create()
+      .uvs.add(1)
       .setDirection("east")
       .updatePosition(w, h / 2, d / 2)
       .create()
+      .uvs.add(1)
       .setDirection("west")
       .updatePosition(0, h / 2, d / 2)
       .create();

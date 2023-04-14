@@ -1,8 +1,9 @@
-import type { AnimatedPixelEntity } from "../Classes/AnimatedPixelEntity.js";
+import { AnimatedPixelEntityType } from "../Classes/AnimatedPixelEntityType.js";
+import type { ProcessedEntityData } from "Types/PixelEntityData.types.js";
 export declare const PixelEntityAnimationManager: {
-    pixelEntities: Set<AnimatedPixelEntity>;
-    pixelEntitiesIndex: Map<string, AnimatedPixelEntity>;
-    addEntity(entity: AnimatedPixelEntity): void;
+    pixelEntitiesTypeIndex: Map<string, AnimatedPixelEntityType>;
+    addEntityType(entity: AnimatedPixelEntityType): void;
+    getEntityType(data: ProcessedEntityData): AnimatedPixelEntityType;
     removeEntity(id: string): void;
     runAnimation(): void;
 };

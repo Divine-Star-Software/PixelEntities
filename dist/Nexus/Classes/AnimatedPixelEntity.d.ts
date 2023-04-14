@@ -1,11 +1,14 @@
-import type { PixelEntityData, PixelEntityIndexData, PixelEntityKeyFrameData } from "Types/PixelEntityData.types";
+import type { PixelEntityIndexData, ProcessedEntityData } from "Types/PixelEntityData.types";
 import type { Vec3Array } from "divine-voxel-engine/Math";
 import { Flat3DAnyArray } from "divine-voxel-engine/Tools/Util/Flat3dArray.js";
+import { LocationData } from "voxelspaces";
+import { AnimatedPixelEntityType } from "./AnimatedPixelEntityType.js";
 export declare class AnimatedPixelEntity {
-    data: PixelEntityData;
+    location: LocationData;
+    data: ProcessedEntityData;
     id: string;
-    pixelIndex: Flat3DAnyArray<PixelEntityIndexData>;
     matrix: Float32Array;
+    voxelData: Float32Array;
     animation: {
         animation: string;
         count: number;
@@ -16,21 +19,19 @@ export declare class AnimatedPixelEntity {
     };
     nextFrame: Flat3DAnyArray<[displacment: Vec3Array]>;
     currentFrame: Flat3DAnyArray<[displacment: Vec3Array]>;
-    processedKeyFrames: Record<string, Flat3DAnyArray<[displacment: Vec3Array]>[]>;
-    constructor(data: PixelEntityData, id?: string);
+    pixelFlatIndex: Flat3DAnyArray<PixelEntityIndexData>;
+    type: AnimatedPixelEntityType;
+    lightMap: Flat3DAnyArray<{
+        voxelPosition: Vec3Array;
+    }>;
+    constructor(location: LocationData, data: ProcessedEntityData, id?: string);
     _getPercentTillNextFrame(): number;
     _runAnimationTick(): false | undefined;
+    _start: Vec3Array;
+    _end: Vec3Array;
+    _final: Vec3Array;
     _zeroVec3: Vec3Array;
-    lerpFrames(start: Flat3DAnyArray<[displacment: Vec3Array]>, end: Flat3DAnyArray<[displacment: Vec3Array]>, percent: number): void;
+    update([x, y, z]: Vec3Array, ogPositon: Vec3Array): void;
     setAnimation(id: string): void;
-    getAnimationData(id: string): {
-        frameOrder: number[];
-        keyFrames: PixelEntityKeyFrameData[];
-    };
-    getAnimationKeyFrame(id: string, frame: number): Flat3DAnyArray<[displacment: Vec3Array]>;
-    getPixelData(x: number, y: number, z: number): false | PixelEntityIndexData;
-    getPixelPosition(x: number, y: number, z: number): false | Vec3Array;
-    getPixelOriginalPosition(x: number, y: number, z: number): false | Vec3Array;
-    getPixelMatrixIndex(x: number, y: number, z: number): number | false;
     updatePixelPosition([x, y, z]: Vec3Array, [nx, ny, nz]: Vec3Array): void;
 }

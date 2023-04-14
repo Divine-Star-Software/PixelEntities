@@ -7,8 +7,13 @@ import type { LocationData } from "voxelspaces";
 
 import { DVER } from "divine-voxel-engine/Render/DivineVoxelEngineRender.js";
 import { RendredPixelEntity } from "./Classes/RenderedPixelEntity.js";
-import { SetNodeMesh } from "divine-voxel-engine/Meta/Tasks/RenderTasks.types.js";
-
+import { MeshAttributes } from "divine-voxel-engine/Constructor/Builder/Types/MeshData.types.js";
+import {
+  PixelEntityData,
+  ProcessedEntityData,
+} from "Types/PixelEntityData.types.js";
+import { Util } from "divine-voxel-engine/Global/Util.helper.js";
+import { TextureManager } from "divine-voxel-engine/Render/Textures/TextureManager.js";
 export const PixelEntitesRender = {
   entities: new Set<RendredPixelEntity>(),
 
@@ -19,7 +24,7 @@ export const PixelEntitesRender = {
   },
 
   _getEntityShape(location: LocationData) {
-    return new Promise<SetNodeMesh>((resolve) => {
+    return new Promise<MeshAttributes>((resolve) => {
       DVER.constructorCommManager.runPromiseTasks<CreatePixelEntityShapeTask>(
         "create-pixel-entity-shape",
         [location],
@@ -31,20 +36,42 @@ export const PixelEntitesRender = {
     });
   },
 
-  spawnEntity([location, data]: CreatePixelEntityTask) {
+  spawnEntity([location, data]: [
+    location: LocationData,
+    data: PixelEntityData
+  ]) {
     return new Promise<RendredPixelEntity>(async (resolve) => {
+      const processed: ProcessedEntityData = Util.merge(
+        {
+          textureMap: {},
+        },
+        data
+      );
+      
+      for (const key in processed.textures) {
+        const texture = processed.textures[key];
+
+        const id = TextureManager.getTextureUV(texture);
+        processed.textureMap[key] = id;
+      }
+
       const meshData = await this._getEntityShape(location);
       DVER.nexusComm.runPromiseTasks<CreatePixelEntityTask>(
         "create-pixel-entity",
-        [location,data],
+        [location, processed],
         [],
         (returnData: CreatePixelEntityReturn) => {
-          resolve(new RendredPixelEntity(location, meshData, returnData));
+          resolve(
+            new RendredPixelEntity(location, data.size, meshData, returnData)
+          );
         }
       );
     });
   },
 };
+const textureType = DVER.textures.addTextureType("#dve_pixel_entity");
+console.log(textureType,"what the fuck");
+textureType.removeSegment("overlay");
 
 setInterval(() => {
   PixelEntitesRender.updateEntities();
